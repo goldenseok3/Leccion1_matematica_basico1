@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guía Didáctica: La Lógica - Colegio Escolaris</title>
+    <!-- Importamos íconos para elementos visuales sin depender de imágenes pesadas -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* --- IDENTIDAD VISUAL COLEGIO ESCOLARIS --- */
+        :root {
+            /* Colores Principales */
+            --color-orange: #db6015;   /* Naranja quemado */
+            --color-yellow: #f7be00;   /* Amarillo dorado */
+            --color-blue-dark: #244b5a; /* Azul oscuro */
+            --color-red: #993921;      /* Rojo ladrillo */
+            
+            /* Fondos */
+            --bg-blue-light: #f0f8ff;
+            --bg-white: #ffffff;
+            
+            /* Tipografía */
+            --font-primary: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none; /* Evita selección de texto accidental al navegar */
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: #e2e8f0; /* Fondo neutral fuera del libro */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* --- CONTENEDOR TIPO LIBRO (SLIDE DECK) --- */
+        #book-container {
+            width: 100%;
+            max-width: 1024px; /* Tamaño optimizado para escritorio/tablet */
+            height: 100%;
+            max-height: 700px;
+            background-color: var(--bg-white);
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- DIAPOSITIVAS --- */
+        .slide {
+            flex: 1;
+            display: none; /* Ocultas por defecto */
+            padding: 40px 80px; /* Margen para contenido, dejando espacio a flechas */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-blue-light);
+            /* Patrón de fondo sutil Escolaris */
+            background-image: 
+                radial-gradient(circle at 5% 5%, rgba(219, 96, 21, 0.03) 0%, transparent 10%),
+                radial-gradient(circle at 95% 95%, rgba(36, 75, 90, 0.03) 0%, transparent 10%);
+            animation: fadeIn 0.4s ease-out;
+            text-align: center;
+            overflow-y: auto; /* Permite scroll si el contenido es muy alto en pantallas pequeñas */
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* --- TIPOGRAFÍA --- */
+        h1 {
+            color: var(--color-orange);
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            line-height: 1.1;
+        }
+        h2 {
+            color: var(--color-blue-dark);
+            font-size: 2.2rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 4px solid var(--color-yellow);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: var(--color-red);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        p, li {
+            color: #334155;
+            font-size: 1.25rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        strong {
+            color: var(--color-blue-dark);
+        }
+
+        /* --- NAVEGACIÓN (FLECHAS GRANDES) --- */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 3px solid var(--color-orange);
+            color: var(--color-orange);
+            font-size: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .nav-btn:hover {
+            background: var(--color-orange);
+            color: white;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .nav-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+        .prev-btn { left: 20px; }
+        .next-btn { right: 20px; }
+        
+        .nav-btn.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+            border-color: #ccc;
+            color: #ccc;
+        }
+
+        /* --- BARRA DE PROGRESO --- */
+        .progress-container {
+            height: 8px;
+            background: #e2e8f0;
+            width: 100%;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-orange), var(--color-yellow));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* --- ELEMENTOS VISUALES ESPECÍFICOS --- */
+        
+        /* Cajas de Conceptos */
+        .concept-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 6px solid var(--color-blue-dark);
+            margin: 10px;
+            text-align: left;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* Grid de Íconos */
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 20px;
+        }
+        .icon-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.2s;
+            border: 2px solid transparent;
+        }
+        .icon-card:hover {
+            border-color: var(--color-yellow);
+            transform: translateY(-5px);
+        }
+        .icon-card i {
+            font-size: 3rem;
+            color: var(--color-orange);
+            margin-bottom: 10px;
+        }
+
+        /* Botones de Actividad */
+        .quiz-option {
+            width: 100%;
+            max-width: 500px;
+            padding: 15px 20px;
+            margin: 10px 0;
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .quiz-option:hover {
+            border-color: var(--color-blue-dark);
+            background: #f8fafc;
+        }
+        .quiz-option.correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #14532d;
+        }
+        .quiz-option.incorrect {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #7f1d1d;
+        }
+
+        /* Feedback Box */
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            display: none;
+            animation: fadeIn 0.3s;
+            max-width: 500px;
+        }
+        
+        /* Botón Reintentar */
+        .retry-btn {
+            background: var(--color-blue-dark);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Layout Dos Columnas */
+        .two-cols {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 900px;
+            flex-wrap: wrap; /* Para móviles */
+        }
+        .col { flex: 1; min-width: 300px; }
+
+        /* Ilustración SVG Simulada con CSS */
+        .math-illustration {
+            font-size: 8rem;
+            color: var(--color-blue-dark);
+            position: relative;
+        }
+        .math-bubble {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            background: var(--color-yellow);
+            color: var(--color-blue-dark);
+            font-size: 1.5rem;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="book-container">
+        
+        <!-- BARRA DE PROGRESO -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <!-- FLECHAS DE NAVEGACIÓN -->
+        <div class="nav-btn prev-btn" id="prevBtn" onclick="changeSlide(-1)">
+            <i class="fa-solid fa-chevron-left"></i>
+        </div>
+        <div class="nav-btn next-btn" id="nextBtn" onclick="changeSlide(1)">
+            <i class="fa-solid fa-chevron-right"></i>
+        </div>
+
+        <!-- === CONTENIDO DE LAS DIAPOSITIVAS === -->
+
+        <!-- DIAPOSITIVA 1: PORTADA -->
+        <div class="slide active">
+            <div class="math-illustration">
+                <i class="fa-solid fa-shapes"></i>
+                <div class="math-bubble">1ro Secundaria</div>
+            </div>
+            <h3 style="margin-top: 20px; color: var(--color-blue-dark);">MATEMÁTICAS - PLAN MADUREZ</h3>
+            <h1>La Lógica</h1>
+            <p>Lección 1: El arte de pensar correctamente</p>
+            <div style="margin-top: 30px; padding: 15px 30px; background: var(--color-orange); color: white; border-radius: 50px; font-weight: bold; font-size: 1.2rem;">
+                ¡Aprender matemáticas es divertido!
+            </div>
+            <div style="margin-top: 20px; font-size: 0.9rem; color: #64748b;">Colegio Escolaris - Educación en Línea</div>
+        </div>
+
+        <!-- DIAPOSITIVA 2: OBJETIVOS -->
+        <div class="slide">
+            <h2>Objetivos de hoy</h2>
+            <div class="two-cols">
+                <div class="concept-box" style="border-left-color: var(--color-orange);">
+                    <h3><i class="fa-solid fa-bullseye"></i> 1. Identificar</h3>
+                    <p>Reconocer qué oraciones son proposiciones lógicas y cuáles no.</p>
+                </div>
+                <div class="concept-box" style="border-left-color: var(--color-yellow);">
+                    <h3><i class="fa-solid fa-brain"></i> 2. Razonar</h3>
+                    <p>Utilizar el sentido común y la lógica para resolver problemas cotidianos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 3: ACTIVACIÓN -->
+        <div class="slide">
+            <h2>¿Usamos lógica a diario?</h2>
+            <div class="two-cols">
+                <div class="col" style="text-align: center;">
+                    <i class="fa-solid fa-traffic-light" style="font-size: 8rem; color: #333;"></i>
+                </div>
+                <div class="col">
+                    <p>Imagina que vas conduciendo y ves la luz <strong>ROJA</strong> del semáforo.</p>
+                    <p>Tu mente hace un proceso lógico rápido:</p>
+                    <div class="concept-box">
+                        <p><strong>SI</strong> está en rojo &rarr; <strong>ENTONCES</strong> me detengo.</p>
+                    </div>
+                    <p>¡Eso es lógica matemática aplicada!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 4: PALABRAS CLAVE -->
+        <div class="slide">
+            <h2>Conceptos Clave</h2>
+            <div class="icon-grid">
+                <div class="icon-card">
+                    <i class="fa-solid fa-quote-left"></i>
+                    <h3>Proposición</h3>
+                    <p style="font-size: 1rem;">Una frase que puede ser verdadera o falsa.</p>
+                </div>
+                <div class="icon-card">
+                    <i class="fa-solid fa-check-double"></i>
+                    <h3>Valor de Verdad</h3>
+                    <p style="font-size: 1rem;">Decir si algo es Verdadero (V) o Falso (F).</p>
+                </div>
+                <div class="icon-card">
+                    <i class="fa-solid fa-link"></i>
+                    <h3>Conectivos</h3>
+                    <p style="font-size: 1rem;">Palabras de unión como "y", "o", "si...".</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 5: CONTENIDO - PROPOSICIONES -->
+        <div class="slide">
+            <h2>¿Qué es una Proposición?</h2>
+            <p>Es cualquier afirmación de la cual podemos decir con certeza si es Verdadera o Falsa.</p>
+            
+            <div class="two-cols" style="align-items: flex-start;">
+                <div class="concept-box" style="border-left-color: #22c55e;">
+                    <h3 style="color: #14532d;"><i class="fa-solid fa-thumbs-up"></i> SÍ son proposiciones</h3>
+                    <ul style="list-style: none; text-align: left; padding-left: 0;">
+                        <li>• "El cielo es azul" (V)</li>
+                        <li>• "El perro tiene 5 patas" (F, pero es proposición)</li>
+                        <li>• "3 + 2 = 5" (V)</li>
+                    </ul>
+                </div>
+                
+                <div class="concept-box" style="border-left-color: var(--color-red);">
+                    <h3 style="color: var(--color-red);"><i class="fa-solid fa-thumbs-down"></i> NO son proposiciones</h3>
+                    <ul style="list-style: none; text-align: left; padding-left: 0;">
+                        <li>• "¿Qué hora es?" (Pregunta)</li>
+                        <li>• "¡Cuidado!" (Exclamación)</li>
+                        <li>• "Ella es simpática" (Opinión subjetiva)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 6: EXPLORACIÓN VISUAL -->
+        <div class="slide">
+            <h2>Exploración Lógica</h2>
+            <p>La lógica funciona como un interruptor de luz.</p>
+            
+            <div style="display: flex; gap: 50px; margin-top: 30px; align-items: center;">
+                <div style="text-align: center; opacity: 0.5;">
+                    <i class="fa-regular fa-lightbulb" style="font-size: 6rem; color: #333;"></i>
+                    <p><strong>FALSO (0)</strong><br>Apagado</p>
+                </div>
+                
+                <i class="fa-solid fa-arrow-right-long" style="font-size: 3rem; color: var(--color-orange);"></i>
+                
+                <div style="text-align: center;">
+                    <i class="fa-solid fa-lightbulb" style="font-size: 6rem; color: var(--color-yellow); text-shadow: 0 0 20px var(--color-yellow);"></i>
+                    <p><strong>VERDADERO (1)</strong><br>Encendido</p>
+                </div>
+            </div>
+            
+            <p style="margin-top: 30px; font-size: 1rem; background: white; padding: 10px 20px; border-radius: 20px;">
+                <i class="fa-solid fa-mouse-pointer"></i> En matemáticas, no hay "quizás". Es V o es F.
+            </p>
+        </div>
+
+        <!-- DIAPOSITIVA 7: ACTIVIDAD (QUIZ) -->
+        <div class="slide" id="slide-quiz">
+            <h2>Actividad de Comprensión</h2>
+            <p>Selecciona cuál de las siguientes opciones <strong>ES una proposición lógica</strong>:</p>
+            
+            <div style="width: 100%; max-width: 500px;">
+                <button class="quiz-option" onclick="checkAnswer(this, false, 'feedback1', '¡Es una exclamación! No puede ser verdadera o falsa.')">
+                    A) ¡Qué bonito día! <i class="fa-regular fa-circle"></i>
+                </button>
+                
+                <button class="quiz-option" onclick="checkAnswer(this, true, 'feedback1', 'Correcto. Podemos verificar si Guatemala está o no en Europa (es Falso, pero es una proposición).')">
+                    B) Guatemala está en Europa. <i class="fa-regular fa-circle"></i>
+                </button>
+                
+                <button class="quiz-option" onclick="checkAnswer(this, false, 'feedback1', '¡Es una pregunta! Las preguntas no afirman nada.')">
+                    C) ¿Te gustan las matemáticas? <i class="fa-regular fa-circle"></i>
+                </button>
+                
+                <div id="feedback1" class="feedback-box"></div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 8: JUEGO EDUCATIVO -->
+        <div class="slide" id="slide-game">
+            <h2>Juego: Lógica de Compras</h2>
+            <div class="two-cols">
+                <div class="col">
+                    <i class="fa-solid fa-basket-shopping" style="font-size: 5rem; color: var(--color-orange);"></i>
+                    <div class="concept-box" style="margin-top: 20px;">
+                        <p><strong>Regla:</strong> "Si compras pan <strong>Y</strong> leche, te regalo una bolsa."</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <p>Juan compró <strong>solo pan</strong>.</p>
+                    <p>¿Se lleva la bolsa de regalo?</p>
+                    
+                    <button class="quiz-option" onclick="checkGame(this, false, 'feedback2', 'Incorrecto. La regla dice PAN *Y* LECHE. Necesita ambas cosas.')">
+                        SÍ, se la lleva <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button class="quiz-option" onclick="checkGame(this, true, 'feedback2', '¡Excelente! El conector Y exige que se cumplan AMBAS condiciones. Solo pan no es suficiente.')">
+                        NO se la lleva <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    
+                    <div id="feedback2" class="feedback-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 9: REPASO -->
+        <div class="slide">
+            <h2>Repaso Final</h2>
+            <div class="icon-grid">
+                <div class="icon-card" style="border-top: 5px solid var(--color-orange);">
+                    <h3>1</h3>
+                    <p>La lógica nos ayuda a pensar claro y evitar errores.</p>
+                </div>
+                <div class="icon-card" style="border-top: 5px solid var(--color-blue-dark);">
+                    <h3>2</h3>
+                    <p>Una proposición debe ser V o F, nunca ambigua.</p>
+                </div>
+                <div class="icon-card" style="border-top: 5px solid var(--color-yellow);">
+                    <h3>3</h3>
+                    <p>Usamos lógica en semáforos, compras y leyes.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 10: METACOGNICIÓN -->
+        <div class="slide">
+            <i class="fa-solid fa-head-side-virus" style="font-size: 6rem; color: var(--color-blue-dark); margin-bottom: 20px;"></i>
+            <h2>Reflexiona</h2>
+            <p style="font-style: italic; font-size: 1.4rem;">"¿Qué fue lo más fácil de entender en esta lección?"</p>
+            
+            <div style="background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 600px; margin-top: 20px;">
+                <p style="font-size: 1rem; color: #666;">Piensa en un ejemplo de tu trabajo donde uses la lógica "Si hago esto... entonces pasa aquello".</p>
+            </div>
+        </div>
+
+        <!-- DIAPOSITIVA 11: CIERRE -->
+        <div class="slide">
+            <i class="fa-solid fa-star" style="font-size: 6rem; color: var(--color-yellow); text-shadow: 0 0 15px rgba(247, 190, 0, 0.5);"></i>
+            <h1 style="margin-top: 20px;">¡Felicidades!</h1>
+            <p>Has completado la Lección 1 con éxito.</p>
+            <p>Estás un paso más cerca de dominar las matemáticas.</p>
+            
+            <button onclick="location.reload()" style="background: var(--color-orange); color: white; border: none; padding: 15px 40px; border-radius: 30px; font-size: 1.2rem; cursor: pointer; margin-top: 30px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-rotate-right"></i> Repasar Lección
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // --- LÓGICA DE NAVEGACIÓN ---
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        const progressBar = document.getElementById('progressBar');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        function updateUI() {
+            // Mostrar diapositiva actual
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Actualizar barra de progreso
+            const progress = ((currentSlide + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Estado de botones
+            if (currentSlide === 0) {
+                prevBtn.classList.add('disabled');
+            } else {
+                prevBtn.classList.remove('disabled');
+            }
+
+            if (currentSlide === totalSlides - 1) {
+                nextBtn.classList.add('disabled');
+            } else {
+                nextBtn.classList.remove('disabled');
+            }
+        }
+
+        function changeSlide(direction) {
+            const newIndex = currentSlide + direction;
+            if (newIndex >= 0 && newIndex < totalSlides) {
+                currentSlide = newIndex;
+                updateUI();
+            }
+        }
+
+        // Inicializar
+        updateUI();
+
+        // --- LÓGICA DE ACTIVIDADES (QUIZ) ---
+        function checkAnswer(btn, isCorrect, feedbackId, message) {
+            const feedbackEl = document.getElementById(feedbackId);
+            const parent = btn.parentElement;
+            const options = parent.querySelectorAll('.quiz-option');
+
+            // Deshabilitar todas las opciones
+            options.forEach(opt => {
+                opt.disabled = true;
+                opt.style.cursor = 'default';
+                if(opt === btn) {
+                    // Icono cambio
+                    const icon = opt.querySelector('i');
+                    icon.className = isCorrect ? "fa-solid fa-circle-check" : "fa-solid fa-circle-xmark";
+                }
+            });
+
+            feedbackEl.style.display = 'block';
+            feedbackEl.innerHTML = message;
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                feedbackEl.style.backgroundColor = '#dcfce7';
+                feedbackEl.style.color = '#14532d';
+            } else {
+                btn.classList.add('incorrect');
+                feedbackEl.style.backgroundColor = '#fee2e2';
+                feedbackEl.style.color = '#7f1d1d';
+                feedbackEl.innerHTML += '<br><button class="retry-btn" onclick="resetQuiz(this)">Intentar de nuevo</button>';
+            }
+        }
+
+        // --- LÓGICA DE JUEGO ---
+        function checkGame(btn, isCorrect, feedbackId, message) {
+            // Reutilizamos la lógica del quiz pero con estilo específico
+            checkAnswer(btn, isCorrect, feedbackId, message);
+        }
+
+        // --- REINTENTAR ---
+        function resetQuiz(retryBtn) {
+            // Encontrar el contenedor padre (feedback box)
+            const feedbackBox = retryBtn.parentElement;
+            const quizContainer = feedbackBox.parentElement;
+            const options = quizContainer.querySelectorAll('.quiz-option');
+
+            // Resetear estilos
+            options.forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+                opt.disabled = false;
+                opt.style.cursor = 'pointer';
+                // Resetear icono por defecto (círculo vacío)
+                const icon = opt.querySelector('i');
+                // Si es el juego usa check/xmark, si es quiz usa circulo. 
+                // Simplificación: reseteamos a circulo regular si es quiz
+                if(quizContainer.parentElement.id === "slide-game" || quizContainer.parentElement.parentElement.id === "slide-game") {
+                     // Lógica específica juego: botones tienen iconos fijos en HTML, no los tocamos mucho
+                } else {
+                    icon.className = "fa-regular fa-circle";
+                }
+            });
+
+            // Ocultar feedback
+            feedbackBox.style.display = 'none';
+            feedbackBox.innerHTML = '';
+        }
+    </script>
+</body>
+</html>
